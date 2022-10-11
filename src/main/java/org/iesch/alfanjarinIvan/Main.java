@@ -22,26 +22,8 @@ public class Main {
         String opcion = "";
         while (true) {
             try {
-                log.trace("Leemos el archivo de configuración");
-                reader = new FileReader(config);
-                propertiesConfig.load(reader);
-                log.trace("Leemos la configuración de idioma y la cargamos");
-                if (propertiesConfig.getProperty("Idioma").equals("es")) {
-                    // Español
-                    reader = new FileReader(español);
-                    properties.load(reader);
-                } else if (propertiesConfig.getProperty("Idioma").equals("en")) {
-                    // Inglés
-                    reader = new FileReader(english);
-                    properties.load(reader);
-                }
-                log.trace("Entramos en el menú inicial");
-                System.out.println(properties.getProperty("Bienvenida"));
-                System.out.println(properties.getProperty("SeleccionaUnaOpcion"));
-                System.out.println(properties.getProperty("Jugar"));
-                System.out.println(properties.getProperty("CambiarIdioma"));
-                System.out.println(properties.getProperty("CambiarDificultad"));
-                System.out.println(properties.getProperty("Salir"));
+                leerFicheroConfiguracion();
+                generarMenu();
                 opcion = sc.nextLine();
                 log.trace("Cargada la configuracion anterior");
                 log.warn("Se debe introducir un numero menor a 4");
@@ -53,120 +35,161 @@ public class Main {
                     if (propertiesConfig.getProperty("Dificultad").equals("Facil")) {
                         juegoFacil(victorias, derrotas, empates);
                     } else if (propertiesConfig.getProperty("Dificultad").equals("Dificil")) {
-                        log.trace("Comienza la partida en dificultad dificil");
-                        log.warn("Si el usuario introduce un número mayor de 3 o algo que no sea un entero el programa crasheara");
                         juegoDificil(victorias, derrotas, empates);
-                        log.trace("Acaba la partida");
                     }
                 } else if (Integer.parseInt(opcion) == 2) {
-                    log.trace("Entramos en el menu de cambiar idioma");
-                    log.warn("Si el usuario introduce un número mayor de 2 o algo que no sea un entero el programa crasheara");
-                    System.out.println(properties.getProperty("SeleccionaUnaOpcion"));
-                    System.out.println(properties.getProperty("Español"));
-                    System.out.println(properties.getProperty("Ingles"));
+                    menuIdiomas();
                     opcion = sc.nextLine();
-                    log.trace("Idioma en Español");
+
                     if (Integer.parseInt(opcion) == 1) {
-                        propertiesConfig.setProperty("Idioma", "es");
-                        propertiesConfig.store(new BufferedWriter(new FileWriter(config)), "");
-                        log.trace("Idioma en Ingles");
+                        Modificar("Idioma", "es");
+                        log.trace("Idioma en Español");
                     } else if (Integer.parseInt(opcion) == 2) {
-                        propertiesConfig.setProperty("Idioma", "en");
-                        propertiesConfig.store(new BufferedWriter(new FileWriter(config)), "");
+                        Modificar("Idioma", "en");
+                        log.trace("Idioma en Ingles");
                     }
                     log.warn("Se debe introducir un numero menor a 4");
                 } else if (Integer.parseInt(opcion) == 3) {
-                    log.warn("Se debe introducir un numero menor a 2");
-                    System.out.println(properties.getProperty("Selecciona Una Opcion"));
-                    System.out.println(properties.getProperty("Facil"));
-                    System.out.println(properties.getProperty("Dificil"));
+                    menuDificultad("Se debe introducir un numero menor a 2", "Facil", "Dificil");
                     opcion = sc.nextLine();
-                    log.trace("Cambiamos la dificultad a Fácil");
                     if (Integer.parseInt(opcion) == 1) {
-                        propertiesConfig.setProperty("Dificultad", "Facil");
-                        propertiesConfig.store(new BufferedWriter(new FileWriter(config)), "");
-                        log.trace("Cambiamos la dificultad a Dificil");
+                        Modificar("Dificultad", "Facil");
+                        log.trace("Cambiamos la dificultad a Fácil");
                     } else if (Integer.parseInt(opcion) == 2) {
-                        propertiesConfig.setProperty("Dificultad", "Dificil");
-                        propertiesConfig.store(new BufferedWriter(new FileWriter(config)), "");
+                        Modificar("Dificultad", "Dificil");
+                        log.trace("Cambiamos la dificultad a Dificil");
                     }
                 } else if (Integer.parseInt(opcion) == 4) {
                     properties.getProperty("FinPrograma");
                     log.trace("Salimos del programa");
-                    log.warn("Se debe introducir un numero menor a 4");
                     break;
                 }
             } catch (FileNotFoundException e) {
                 log.error("Error de , ya que no se encontro un archivo");
-                throw new RuntimeException(e);
+                throw new RuntimeException("Error de , ya que no se encontro un archivo");
             } catch (IOException e) {
                 log.error("Error durante el tiempo de ejecucion");
-                throw new RuntimeException(e);
+                throw new RuntimeException("Error durante el tiempo de ejecucion");
             }
         }
     }
 
+    private static void Modificar(String Formato, String key) throws IOException {
+        propertiesConfig.setProperty(Formato, key);
+        propertiesConfig.store(new BufferedWriter(new FileWriter(config)), "");
+    }
+
+    private static void menuDificultad(String s, String Facil, String Dificil) {
+        log.warn(s);
+        System.out.println(properties.getProperty("Opcion"));
+        System.out.println(properties.getProperty(Facil));
+        System.out.println(properties.getProperty(Dificil));
+    }
+
+    private static void menuIdiomas() {
+        log.trace("Entramos en el menu de cambiar idioma");
+        menuDificultad("Se debe introducir un numero menor a 3", "Español", "Ingles");
+    }
+
+    private static void generarMenu() {
+        log.trace("Entramos en el menú inicial");
+        System.out.println(properties.getProperty("Bienvenida"));
+        System.out.println(properties.getProperty("Opcion"));
+        System.out.println(properties.getProperty("Jugar"));
+        System.out.println(properties.getProperty("CambiarIdioma"));
+        System.out.println(properties.getProperty("CambiarDificultad"));
+        System.out.println(properties.getProperty("Salir"));
+    }
+
+    private static void leerFicheroConfiguracion() throws IOException {
+        log.trace("Leemos el archivo de configuración");
+        reader = new FileReader(config);
+        propertiesConfig.load(reader);
+        log.trace("Leemos la configuración de idioma y la cargamos");
+        if (propertiesConfig.getProperty("Idioma").equals("es")) {
+            // Español
+            reader = new FileReader(español);
+            properties.load(reader);
+        } else if (propertiesConfig.getProperty("Idioma").equals("en")) {
+            // Inglés
+            reader = new FileReader(english);
+            properties.load(reader);
+        }
+    }
+
     private static void juegoDificil(int victorias, int derrotas, int empates) {
+        log.trace("Comienza la partida en dificultad dificil");
+        log.warn("Se debe introducir un numero menor a 3");
         String opcion;
         int opcionIA;
+        boolean salir = false;
         log.trace("Comienza la partida en dificultad dificil");
         log.warn("Se debe introducir un numero menor a 3");
         try {
-            for (int i = 0; i < 4; i++) {
-                opcionIA = (int) (Math.random() * 3 + 1);
-                System.out.println(properties.getProperty("SeleccionaUnaOpcion"));
-                System.out.println(properties.getProperty("Piedra"));
-                System.out.println(properties.getProperty("Papel"));
-                System.out.println(properties.getProperty("Tijera"));
-                opcion = sc.nextLine();
-                if (i == 0 | i == 2) {
-                    if (Integer.parseInt(opcion) != 3) {
-                        opcionIA = Integer.parseInt(opcion) + 1;
-                    } else {
-                        opcionIA = 1;
+            while (!salir) {
+                for (int i = 0; i < 4; i++) {
+                    if (salir){
+                        break;
+                    }
+                    opcionIA = (int) (Math.random() * 3 + 1);
+                    System.out.println(properties.getProperty("Opcion"));
+                    System.out.println(properties.getProperty("Piedra"));
+                    System.out.println(properties.getProperty("Papel"));
+                    System.out.println(properties.getProperty("Tijera"));
+                    opcion = sc.nextLine();
+                    if (i == 0 | i == 2) {
+                        if (Integer.parseInt(opcion) != 3) {
+                            opcionIA = Integer.parseInt(opcion) + 1;
+                        } else {
+                            opcionIA = 1;
+                        }
+                    }
+                    // Lógica del juego
+                    switch (Integer.parseInt(opcion)) {
+                        case 1://Piedra
+                            if (opcionIA == 1) {
+                                empates++;
+                            } else if (opcionIA == 2) {
+                                derrotas++;
+                            } else if (opcionIA == 3) {
+                                victorias++;
+                            }
+                            mostrarResultados(derrotas, victorias, empates);
+                            break;
+                        case 2://Papel
+                            if (opcionIA == 1) {
+                                victorias++;
+                            } else if (opcionIA == 2) {
+                                empates++;
+                            } else if (opcionIA == 3) {
+                                derrotas++;
+                            }
+                            mostrarResultados(derrotas, victorias, empates);
+                            break;
+                        case 3://Tijera
+                            if (opcionIA == 1) {
+                                derrotas++;
+                            } else if (opcionIA == 2) {
+                                victorias++;
+                            } else if (opcionIA == 3) {
+                                empates++;
+                            }
+                            mostrarResultados(derrotas, victorias, empates);
+                            break;
+
+                        default:
+                            log.trace("El usuario salio al menu principal");
+                            System.out.println("Saliendo del programa");
+                            System.out.println("---------------------------------------------------------------");
+                            salir = true;
                     }
                 }
-                // Lógica del juego
-                switch (Integer.parseInt(opcion)) {
-                    case 1://Piedra
-                        if (opcionIA == 1) {
-                            empates++;
-                        } else if (opcionIA == 2) {
-                            derrotas++;
-                        } else if (opcionIA == 3) {
-                            victorias++;
-                        }
-                        mostrarResultados(derrotas, victorias, empates);
-                        break;
-                    case 2://Papel
-                        if (opcionIA == 1) {
-                            victorias++;
-                        } else if (opcionIA == 2) {
-                            empates++;
-                        } else if (opcionIA == 3) {
-                            derrotas++;
-                        }
-                        mostrarResultados(derrotas, victorias, empates);
-                        break;
-                    case 3://Tijera
-                        if (opcionIA == 1) {
-                            derrotas++;
-                        } else if (opcionIA == 2) {
-                            victorias++;
-                        } else if (opcionIA == 3) {
-                            empates++;
-                        }
-                        mostrarResultados(derrotas, victorias, empates);
-                        break;
-
-                    default:
-                        log.warn("El usuario introdujo un valor distinto al pedido");
-                }
             }
-        }catch (Exception e){
-            log.error("El usuario introdujo un valor que no fue un entero");
-            throw new RuntimeException("Introdujiste un valor que no fue un entero");
-        }
+            }catch(Exception e){
+                log.error("El usuario introdujo un valor que no fue un entero");
+                throw new RuntimeException("Introdujiste un valor que no fue un entero");
+            }
+
         log.trace("Acaba la partida");
     }
 
@@ -180,7 +203,7 @@ public class Main {
                     break;
                 }
                 opcionIA = (int) (Math.random() * 3 + 1);
-                System.out.println(properties.getProperty("SeleccionaUnaOpcion"));
+                System.out.println(properties.getProperty("Opcion"));
                 System.out.println(properties.getProperty("Piedra"));
                 System.out.println(properties.getProperty("Papel"));
                 System.out.println(properties.getProperty("Tijera"));
