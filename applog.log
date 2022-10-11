@@ -1,0 +1,8 @@
+[main] TRACE org.iesch.alfanjarinIvan.Main - Comienza el programa
+[main] TRACE org.iesch.alfanjarinIvan.Main - Leemos el archivo de configuración
+[main] TRACE org.iesch.alfanjarinIvan.Main - Leemos la configuración de idioma y la cargamos
+[main] TRACE org.iesch.alfanjarinIvan.Main - Entramos en el menú inicial
+[main] TRACE org.iesch.alfanjarinIvan.Main - Cargada la configuracion anterior
+[main] WARN org.iesch.alfanjarinIvan.Main - Se debe introducir un numero menor a 4
+[main] TRACE org.iesch.alfanjarinIvan.Main - Salimos del programa
+[main] WARN org.iesch.alfanjarinIvan.Main - Se debe introducir un numero menor a 4
